@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload document</title>
+
+
+</head>
+<body>
+<h2>Documents Upload</h2>
+<h3>Select your first document here then click upload (tone source)</h3></br>
+<input id="fileUploadA" type="file" name="fileUpload" />
+<button id="upload-button1" onClick="uploadFile(1)">Upload File A</button><br/><br/><br/>
+
+<h3>Select your second document here then click upload (content item)</h3></br>
+<input id="fileUploadB" type="file" name="fileUpload" />
+<button id="upload-button2" onClick="uploadFile(2)">Upload File B</button><br/><br/><br/>
+
+<h3>Finally lets do the processing, click the button below (need to wait a while here.. ) </h3></br>
+<button id="do-work" onclick="doTheWork()">Do the work!</button>
+
+</br></br></br>
+
+<script language="JavaScript">
+    async function uploadFile(n) {
+
+       let formData = new FormData();
+       if (n==1) {
+            formData.append( "data", fileUploadA.files[0]);
+       }
+       else {
+            formData.append( "data", fileUploadB.files[0]);
+       }
+
+
+       await fetch('http://localhost:8080/api/document', {
+       method: 'POST',
+       body: formData
+            }).then( result => result.text()).then(text => alert(text));
+   }
+
+   async function doTheWork() {
+
+       await fetch('http://localhost:8080/api/dowork', {
+           method: 'POST'
+                }).then( result => result.text()).then(text => alert(text));
+    }
+
+</script>
+</body>
+</html>
