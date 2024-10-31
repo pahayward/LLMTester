@@ -2,50 +2,134 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload document</title>
+    <title>Upload Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
+        .container {
+            width: 80%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .upload-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .upload-section h3 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .action-button {
+            margin-top: 20px;
+        }
+
+        #responseText {
+            width: 100%;
+            height: 100px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            resize: none;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-<h2>Documents Upload</h2>
-<h3>Select your first document here then click upload (tone source)</h3></br>
-<input id="fileUploadA" type="file" name="fileUpload" />
-<button id="upload-button1" onClick="uploadFile(1)">Upload File A</button><br/><br/><br/>
 
-<h3>Select your second document here then click upload (content item)</h3></br>
-<input id="fileUploadB" type="file" name="fileUpload" />
-<button id="upload-button2" onClick="uploadFile(2)">Upload File B</button><br/><br/><br/>
+<div class="container">
+    <h2>Documents Upload</h2>
 
-<h3>Finally lets do the processing, click the button below (need to wait a while here.. ) </h3></br>
-<button id="do-work" onclick="doTheWork()">Do the work!</button>
+    <div class="upload-section">
+        <h3>Select your first document (Tone Source)</h3>
+        <input id="fileUploadA" type="file" name="fileUploadA"/>
+    </div>
 
-</br></br></br>
+    <div class="upload-section">
+        <h3>Select your second document (Content Item)</h3>
+        <input id="fileUploadB" type="file" name="fileUploadB"/>
+    </div>
+
+    <button id="upload-button" class="action-button" onclick="uploadFiles()">Upload Files & Do the Work</button>
+
+    <textarea id="responseText" placeholder="Server response will appear here..." readonly></textarea>
+</div>
 
 <script language="JavaScript">
-    async function uploadFile(n) {
+    async function uploadFiles() {
+        // Create FormData and add both files if present
+        let formData = new FormData();
+        if (fileUploadA.files[0]) formData.append("fileUploadA", fileUploadA.files[0]);
+        if (fileUploadB.files[0]) formData.append("fileUploadB", fileUploadB.files[0]);
 
-       let formData = new FormData();
-       if (n==1) {
-            formData.append( "data", fileUploadA.files[0]);
-       }
-       else {
-            formData.append( "data", fileUploadB.files[0]);
-       }
+        // Send files to the server and ignore the response
+        await fetch('http://localhost:8080/api/document', {
+            method: 'POST',
+            body: formData
+        });
 
-
-       await fetch('http://localhost:8080/api/document', {
-       method: 'POST',
-       body: formData
-            }).then( result => result.text()).then(text => alert(text));
-   }
-
-   async function doTheWork() {
-
-       await fetch('http://localhost:8080/api/dowork', {
-           method: 'POST'
-                }).then( result => result.text()).then(text => alert(text));
+        // Trigger doTheWork to get the server response and display it in the textarea
+        doTheWork();
     }
 
+    async function doTheWork() {
+        await fetch('http://localhost:8080/api/dowork', {
+            method: 'POST'
+        })
+        .then(result => result.text())
+        .then(text => {
+            // Set the response text in the textarea
+            document.getElementById('responseText').value = text;
+        });
+    }
 </script>
+
 </body>
 </html>

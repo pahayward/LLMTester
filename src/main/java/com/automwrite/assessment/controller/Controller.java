@@ -35,18 +35,30 @@ public class Controller {
     // Create / Update DocumentContainers held by class in memory
     // http://localhost:8080/api/document
     @PostMapping("/document")
-    public DocumentContainer PostDocument(@RequestPart("data") MultipartFile doc) {
+    public  ResponseEntity<String> PostDocument(@RequestPart("fileUploadA") MultipartFile docA, @RequestPart("fileUploadB") MultipartFile docB) {
 
         // Document ID
         try {
+
+            myDocs.clear();
+
             String id = UUID.randomUUID().toString();
-            DocumentContainer newDoc = new DocumentContainer(id, doc.getOriginalFilename(), "", doc.getBytes());
-            if (myDocs.containsKey(newDoc.getId())) {
-                myDocs.replace(id, newDoc);
+            DocumentContainer newDocA = new DocumentContainer(id, docA.getOriginalFilename(), "", docA.getBytes());
+            if (myDocs.containsKey(newDocA.getId())) {
+                myDocs.replace(id, newDocA);
             } else {
-                myDocs.put(id, newDoc);
+                myDocs.put(id, newDocA);
             }
-            return newDoc; // Give you a copy back
+
+            id = UUID.randomUUID().toString();
+            DocumentContainer newDocB = new DocumentContainer(id, docA.getOriginalFilename(), "", docB.getBytes());
+            if (myDocs.containsKey(newDocB.getId())) {
+                myDocs.replace(id, newDocB);
+            } else {
+                myDocs.put(id, newDocB);
+            }
+
+            return ResponseEntity.ok("succeeded");
         }
         catch (IOException e)
         {
@@ -98,6 +110,8 @@ public class Controller {
             var tone = LLMWrapper.getTone(llmService, docA );
 
             var newDocument = LLMWrapper.setToneOf(llmService, docB, tone);
+
+            //LLMWrapper.ReworkDocument( docB, newDocument);
             return ResponseEntity.ok(newDocument);
         }
 

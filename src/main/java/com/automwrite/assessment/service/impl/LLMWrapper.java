@@ -7,7 +7,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 public class LLMWrapper {
 
     private final static String tonePrompt = "Identify the tone of the following text, generate a reply with only Casual, Formal or Grandiloquent as a response. Do not provide any explanation. This is the text:";
-    private final static String updatePrompt = "Update the following text to have the tone %s. The response should have the same number of lines and the same semantic meaning when replying. Only include your reply and not any additional explanation. This is the text : %s";
+    private final static String updatePrompt = "Update the following text to have the tone %s. The response should have the same number of lines and retain same semantic meaning when replying. Only include your reply and not any additional explanation. This is the text : %s";
 
 
     // Get tone of text (async/long-running operation)
@@ -45,5 +45,19 @@ public class LLMWrapper {
         assert ( document != null );
         XWPFWordExtractor oExtract = new XWPFWordExtractor( document );
         return oExtract.getText();
+    }
+
+    public static XWPFDocument ReworkDocument(XWPFDocument content, String newText)
+    {
+        // This is the text of the original document
+        String originalText = getText( content );
+        String originLines[] = originalText.split("\\r?\\n");
+        String newLines[] = newText.split("\\r?\\n");
+
+
+
+
+        // This is the new text
+        return content;
     }
 }
